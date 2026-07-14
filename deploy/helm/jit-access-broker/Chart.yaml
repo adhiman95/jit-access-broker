@@ -1,0 +1,20 @@
+apiVersion: v2
+name: jit-access-broker
+description: JIT Ephemeral Access Broker — zero-trust just-in-time privileged access with PagerDuty/Jira validation, HashiCorp Vault token brokering, and automatic self-destructing credentials.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - security
+  - zero-trust
+  - just-in-time-access
+  - ephemeral-access
+  - hashicorp-vault
+  - pagerduty
+  - jira
+  - devsecops
+home: https://github.com/adhiman95/jit-access-broker
+sources:
+  - https://github.com/adhiman95/jit-access-broker
+maintainers:
+  - name: adhiman95

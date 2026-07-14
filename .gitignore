@@ -1,0 +1,32 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go test coverage
+*.out
+coverage.txt
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local config with real secrets — NEVER commit this!
+config.local.yaml
+config.*.local.yaml
+state.json
+*.state.json
+
+# Go workspace files
+go.work
+go.work.sumtest_results.txt

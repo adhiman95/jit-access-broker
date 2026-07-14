@@ -1,0 +1,130 @@
+# Default values for jit-access-broker Helm chart
+# This is a YAML-formatted file.
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/adhiman95/jit-access-broker
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 65534
+
+securityContext:
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65534
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: jit-access-broker.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ---------------------------------------------------------------------------
+# JIT Access Broker application configuration
+# ---------------------------------------------------------------------------
+config:
+  # Core settings
+  tokenTTL: "60m"
+  maxSessionDuration: "8h"
+  warningBeforeExpiry: "5m"
+
+  # Vault
+  vault:
+    addr: "https://vault.vault.svc.cluster.local:8200"
+    # token loaded from secret below
+    tokenTTL: "60m"
+    maxTokensPerUser: 3
+
+  # Providers
+  providers:
+    pagerduty:
+      apiBaseUrl: "https://api.pagerduty.com"
+      # apiToken loaded from secret
+    jira:
+      apiBaseUrl: "https://example.atlassian.net"
+      # username + apiToken loaded from secret
+
+  # Persistence (crash recovery)
+  persistence:
+    enabled: true
+    path: "/data/state.json"
+
+  # Notifications
+  notifications:
+    enabled: false
+
+  # Break-Glass (emergency quorum access)
+  breakGlass:
+    enabled: false
+
+  # Slack ChatOps
+  slack:
+    enabled: false
+    # signingSecret + botToken loaded from secret
+
+# ---------------------------------------------------------------------------
+# Secrets — provide these via --set or your own secret management
+# ---------------------------------------------------------------------------
+existingSecret: ""
+secrets:
+  vaultToken: "REPLACE_ME"
+  pagerdutyApiToken: "REPLACE_ME"
+  jiraApiToken: "REPLACE_ME"
+  jiraUsername: "bot@example.com"
+  slackSigningSecret: ""
+  slackBotToken: ""
+
+# ---------------------------------------------------------------------------
+# Persistence volume
+# ---------------------------------------------------------------------------
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi

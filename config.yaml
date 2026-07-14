@@ -1,0 +1,79 @@
+ # JIT Ephemeral Access Broker — Sample Configuration
+# =====================================================
+# Copy to config.local.yaml and fill in real values.
+
+server:
+  addr: ":8080"
+  shutdown_timeout: "5s"
+
+# Token lifecycle guardrails (hardcoded ceiling enforced in code)
+token_ttl: "60m"                  # TTL for each issued token (max 60m)
+max_session_duration: "4h"        # absolute ceiling across all extensions
+warning_before_expiry: "15m"      # send expiry warning this far in advance
+
+# Contextual Validation Providers
+# ==============================
+providers:
+  pagerduty:
+    api_base_url: "https://api.pagerduty.com"
+    api_token: "YOUR_PAGERDUTY_API_TOKEN"
+
+  jira:
+    api_base_url: "https://your-domain.atlassian.net"
+    username: "bot@your-domain.com"
+    api_token: "YOUR_JIRA_API_TOKEN"
+
+# Token Issuing Provider — HashiCorp Vault
+# ========================================
+vault:
+  addr: "https://127.0.0.1:8200"
+  token: "YOUR_VAULT_ROOT_TOKEN"
+  token_ttl: "60m"
+  max_tokens_per_user: 3
+
+# AWS IAM (optional alternative target — skeleton)
+aws:
+  region: "us-east-1"
+  access_key: ""
+  secret_key: ""
+  role_arn: ""
+
+# Expiry Notifications
+# ====================
+notifications:
+  enabled: false
+  slack_webhook_url: ""
+  teams_webhook_url: ""
+
+# Persistence / Crash Recovery
+# ============================
+# Path to a JSON state file. On restart, live tokens are restored and any
+# tokens that expired while the broker was down are immediately revoked.
+persistence:
+  path: ""  # e.g. "/var/lib/jit-access-broker/state.json" — leave empty to disable
+
+# Slack ChatOps Integration (optional)
+# ====================================
+# Enables the /jit slash command for requesting access directly from Slack.
+# Create a Slack app → Slash Commands → add /jit → point Request URL to:
+#   https://your-broker-host/slack/command
+slack:
+  enabled: false
+  signing_secret: ""    # Slack app signing secret (for HMAC verification)
+  bot_token: ""         # Slack bot token (xoxb-...) for posting messages
+  # Map Slack user IDs to PagerDuty/Jira identities (email):
+  user_email_map:
+    "U12345": "dev@example.com"
+
+# Emergency Break-Glass (2-of-3 Quorum)
+# =====================================
+# When PagerDuty/Jira are unreachable, emergency access can be granted if
+# at least 2 of these 3 trusted approvers cryptographically sign the request.
+#
+# Generate keys with: jitctl genkeys --approver alice
+# Each approver keeps their PRIVATE key secret; only the PUBLIC key goes here.
+break_glass:
+  trusted_approvers:
+    alice: ""  # hex-encoded Ed25519 public key
+    bob: ""    # hex-encoded Ed25519 public key
+    carol: ""  # hex-encoded Ed25519 public key

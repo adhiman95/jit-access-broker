@@ -1,0 +1,27 @@
+# Builds only use source + module files — exclude everything else
+# to keep the Docker build context small and fast.
+bin/
+*.exe
+*.out
+coverage.txt
+state.json
+*.state.json
+config.local.yaml
+config.*.local.yaml
+.git/
+.gitignore
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+README.md
+CONTRIBUTING.md
+SECURITY.md
+LICENSE
+Dockerfile
+docker-compose.yml
+.dockerignore
+.github/
+*.md
